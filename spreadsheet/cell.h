@@ -21,7 +21,7 @@ public:
 class EmptyImpl : public Impl
 {
 public:
-    EmptyImpl();
+    EmptyImpl() = default;
 
     CellInterface::Value GetValue() override;
     std::string GetText() const override;
@@ -61,7 +61,7 @@ class Cell : public CellInterface
 {
 public:
     explicit Cell(SheetInterface& sheet);
-    ~Cell() override;
+    ~Cell() = default;
 
     void Set(const std::string& text);
     void Clear();
