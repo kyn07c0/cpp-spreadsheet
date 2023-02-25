@@ -5,11 +5,17 @@
 
 #include <functional>
 
-class Sheet : public SheetInterface {
-public:
-    ~Sheet();
+struct Hasher 
+{
+    size_t operator()(Position pos) const;
+};
 
-    void SetCell(Position pos, std::string text) override;
+class Sheet : public SheetInterface
+{
+public:
+    ~Sheet() override;
+
+    void SetCell(Position pos, const std::string text) override; // const установил, а вот ссылку не удалось, т.к. переопределяется метод интерфейса SheetInterface, которы нельзя менять   
 
     const CellInterface* GetCell(Position pos) const override;
     CellInterface* GetCell(Position pos) override;
@@ -20,15 +26,13 @@ public:
 
     void PrintValues(std::ostream& output) const override;
     void PrintTexts(std::ostream& output) const override;
-
-    const Cell* GetConcreteCell(Position pos) const;
-    Cell* GetConcreteCell(Position pos);
+    
+    void ResizeTable(Position pos);
+    bool CheckCircularDependency(Position pos, std::vector<Position> dep_cells);
 
 private:
-    void MaybeIncreaseSizeToIncludePosition(Position pos);
-    void PrintCells(std::ostream& output,
-                    const std::function<void(const CellInterface&)>& printCell) const;
-    Size GetActualSize() const;
+    void CheckPosition(Position pos) const;
 
-    std::vector<std::vector<std::unique_ptr<Cell>>> cells_;
+    Size table_size_= {0, 0};
+    std::unordered_map<Position, std::unique_ptr<Cell>, Hasher> table_;
 };
