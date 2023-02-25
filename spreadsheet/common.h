@@ -42,13 +42,35 @@ public:
         Div0,  // в результате вычисления возникло деление на ноль
     };
 
-    FormulaError(Category category);
+    FormulaError(Category category) : category_(category)
+    {
+    }
 
-    Category GetCategory() const;
+    Category GetCategory() const
+    {
+        return category_;
+    }
 
-    bool operator==(FormulaError rhs) const;
+    bool operator==(FormulaError rhs) const
+    {
+        return category_ == rhs.category_;
+    }
 
-    std::string_view ToString() const;
+    std::string_view ToString() const
+    {
+        if(category_ == Category::Ref)
+        {
+            return "#REF!";
+        }
+        else if(category_ == Category::Value)
+        {
+            return "#VALUE!";
+        }
+        else
+        {
+            return "#DIV/0!";
+        }
+    }
 
 private:
     Category category_;
@@ -120,7 +142,7 @@ public:
     // * Если текст начинается с символа "'" (апостроф), то при выводе значения
     // ячейки методом GetValue() он опускается. Можно использовать, если нужно
     // начать текст со знака "=", но чтобы он не интерпретировался как формула.
-    virtual void SetCell(Position pos, std::string text) = 0;
+    virtual void SetCell(Position pos, const std::string& text) = 0;
 
     // Возвращает значение ячейки.
     // Если ячейка пуста, может вернуть nullptr.
